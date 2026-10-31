@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
@@ -7,7 +6,13 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-X, y = load_breast_cancer(return_X_y=True)
+# UCI Car Evaluation dataset (all features are categorical)
+URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data"
+cols = ["buying", "maint", "doors", "persons", "lug_boot", "safety", "class"]
+df = pd.read_csv(URL, names=cols)
+
+X = pd.get_dummies(df.drop(columns="class"))  # one-hot encode
+y = df["class"]                               # unacc / acc / good / vgood
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
@@ -32,7 +37,7 @@ models = {
 def evaluate(model):
     pred = model.predict(X_test)
     cv = cross_val_score(model, X_train, y_train, cv=5).mean()
-    return cv, accuracy_score(y_test, pred), f1_score(y_test, pred)
+    return cv, accuracy_score(y_test, pred), f1_score(y_test, pred, average="weighted")
 
 
 rows = []
@@ -45,6 +50,6 @@ for name, (model, grid) in models.items():
     cv, acc, f1 = evaluate(gs.best_estimator_)
     rows.append([name, "After", cv, acc, f1, gs.best_params_])
 
-df = pd.DataFrame(rows, columns=["Model", "Stage", "CV Acc", "Test Acc", "Test F1", "Params"])
+df_out = pd.DataFrame(rows, columns=["Model", "Stage", "CV Acc", "Test Acc", "Test F1", "Params"])
 pd.set_option("display.width", 200, "display.max_colwidth", 80)
-print(df.round(4).to_string(index=False))
+print(df_out.round(4).to_string(index=False))
