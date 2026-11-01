@@ -40,11 +40,14 @@ def search(use_queue):
                 frontier.append(n)
     return None, explored
 
-
-print(f"{'Algo':<5}{'Path Length':<13}{'Nodes Explored':<16}{'Time (ms)':<10}")
-for name, q in [("BFS", True), ("DFS", False)]:
+for name, q in [("bfs", True), ("dfs", False)]:
     t = time.perf_counter()
-    path, explored = search(q)
-    ms = (time.perf_counter() - t) * 1000
-    print(f"{name:<5}{len(path) if path else 'N/A':<13}{explored:<16}{ms:<10.4f}")
-    print("Path:", path)
+    path, e = search(q)
+    ela = (time.perf_counter() - t) * 1000
+
+    print(name)
+    print("path:", path)
+    print("path lenth:", len(path) if path else "not found")
+    print("node exp: ", e)
+    print("time:", round(ela, 4))
+    print()
