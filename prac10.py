@@ -30,14 +30,15 @@ for name, (a, b) in {"Original": (X_train, X_test), "PCA": (Xp_train, Xp_test)}.
     print(f"{name:<9} accuracy: {acc:.4f} | time: {(time.perf_counter() - t) * 1000:.1f} ms")
 
 # Visualization
-fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+fig, ax = plt.subplots(1, 2, figsize=(10, 3.5))
 ax[0].plot(np.cumsum(PCA().fit(X_train).explained_variance_ratio_), "o-")
 ax[0].axhline(0.95, color="r", linestyle="--")
 ax[0].set(title="Cumulative Explained Variance", xlabel="Components", ylabel="Variance")
 
 p2 = PCA(n_components=2).fit_transform(scaler.transform(X))
-sc = ax[1].scatter(p2[:, 0], p2[:, 1], c=y, cmap="viridis", s=20)
+sc = ax[1].scatter(p2[:, 0], p2[:, 1], c=y, cmap="viridis", s=15)
 ax[1].set(title="Wine in 2D (PCA)", xlabel="PC1", ylabel="PC2")
 fig.colorbar(sc, ax=ax[1], label="Wine class")
+
 plt.tight_layout()
 plt.show()
